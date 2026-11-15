@@ -51,11 +51,11 @@ new ResizeObserver(()=>{const v=$('#vp');ren.setPixelRatio(window.QPR?QPR():Math
 loadRoot(tmpl('base'));buildGz();touchUI();let last=performance.now(),fr=0,acc=0,pm=0;
 function loop(t){requestAnimationFrame(loop);const dt=Math.min((t-last)/1000,.05);last=t;
 try{if(playing){if(dirty){list=[];welds=[];(function w(i){if(i.C=='WeldConstraint')welds.push(i);if(PART.includes(i.C)&&inWS(i)&&!i.Negative&&!(i.Parent&&i.Parent.C=='UnionOperation'))list.push(i);if(i.C=='UnionOperation'&&inWS(i))list.push(...(UC.get(i)||[]));i.K.forEach(w)})(svc.Workspace);dirty=0}
-control();if(!vInit&&pl){setupVeh();vInit=1}if(drv)drive(dt);const t0=performance.now();step(dt);pm=performance.now()-t0;for(const b of list)if(!b.Anchored||b._w)mv(b);if(drv)follow(dt);prv=cur;cur=new Set;hb.fire(dt);const p=pl.Position,v=pl.AssemblyLinearVelocity,cs=UIS.CameraSubject?UIS.CameraSubject.Position:p;O.t.set(cs.X,cs.Y+1.5,cs.Z);if(Math.hypot(v.X,v.Z)>.5){let df=Math.atan2(v.X,v.Z)-fy;df=Math.atan2(Math.sin(df),Math.cos(df));fy+=df*Math.min(1,dt*14)}M.get(pl).rotation.y=fy;PLY.frame(dt,fy)}else edcam(dt);
+control();if(!vInit&&pl){setupVeh();vInit=1}if(drv)drive(dt);if(window.PZC)PZC.pre(dt);const t0=performance.now();step(dt);pm=performance.now()-t0;for(const b of list)if(!b.Anchored||b._w)mv(b);if(drv)follow(dt);prv=cur;cur=new Set;hb.fire(dt);const p=pl.Position,v=pl.AssemblyLinearVelocity,cs=UIS.CameraSubject?UIS.CameraSubject.Position:p;O.t.set(cs.X,cs.Y+1.5,cs.Z);if(Math.hypot(v.X,v.Z)>.5){let df=Math.atan2(v.X,v.Z)-fy;df=Math.atan2(Math.sin(df),Math.cos(df));fy+=df*Math.min(1,dt*14)}M.get(pl).rotation.y=fy;PLY.frame(dt,fy)}else edcam(dt);
 window.__dt=dt;stepF()}catch(e){out('Error: '+e)}
 if(guiDirty&&!playing&&svc.StarterGui)mountGui();
 if(rt){tree();rt=0}
 const c=Math.cos(O.pitch),{x,y,z}=O.t;cam.position.set(x+Math.sin(O.yaw)*c*O.dist,y+Math.sin(O.pitch)*O.dist,z+Math.cos(O.yaw)*c*O.dist);cam.lookAt(x,y,z);
 sun.position.set(x+Math.cos(sunA)*200,y+Math.max(40,Math.sin(sunA)*200),z+60);sun.target.position.set(x,y,z);gzPos();
-ren.render(scene,cam);fr++;acc+=dt;if(acc>.5){$('#hud').textContent=`${Math.round(fr/acc)} FPS · ${ren.info.render.triangles} tris · physics ${pm.toFixed(2)}ms · bodies ${list.length}`;fr=acc=0}}
+if(window.PZC)PZC.frame(dt);ren.render(scene,cam);if(window.PZC)PZC.post();fr++;acc+=dt;if(acc>.5){$('#hud').textContent=`${Math.round(fr/acc)} FPS · ${ren.info.render.triangles} tris · physics ${pm.toFixed(2)}ms · bodies ${list.length}`;fr=acc=0}}
 requestAnimationFrame(loop);

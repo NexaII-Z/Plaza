@@ -11,7 +11,7 @@ const pb=el('button','pb','+');pb.onclick=ev=>{ev.stopPropagation();picker(i,ev)
 r.append(ar,el('span','nm',(ICON[i.C]||'▫')+' '+i.Name),pb);r.onclick=ev=>select(i,ev.ctrlKey||ev.metaKey||ev.shiftKey||multiMode);r.oncontextmenu=ev=>{ev.preventDefault();ctx(i,ev.clientX,ev.clientY)};
 let tm;r.onpointerdown=ev=>{if(ev.pointerType=='touch'){const x=ev.clientX,y=ev.clientY;tm=setTimeout(()=>ctx(i,x,y),450)}};r.onpointerup=r.onpointercancel=()=>clearTimeout(tm);
 e.appendChild(r);if(open.has(i.Id))i.K.forEach(k=>w(k,d+1))};root.K.forEach(k=>w(k,0))}
-function picker(par,ev){const m=$('#menu');m.innerHTML='';const q=el('input');q.placeholder='Search objects…';const L=el('div');L.style.cssText='max-height:50vh;overflow:auto';m.append(q,L);
+function picker(par,ev){const m=$('#menu');m.innerHTML='';const q=el('input');q.placeholder='Search objects…';const L=el('div','ml');L.style.cssText='max-height:50vh;overflow:auto;-webkit-overflow-scrolling:touch';m.append(q,L);
 const draw=()=>{L.innerHTML='';for(const c in CAT){const ns=CAT[c].filter(n=>n.toLowerCase().includes(q.value.toLowerCase()));if(!ns.length)continue;L.append(el('div','mh',c));ns.forEach(n=>{const d=el('div','',(ICON[n]||'▫')+' '+n);d.onclick=()=>{m.classList.add('hide');create(n,par)};L.append(d)})}};q.oninput=draw;draw();
 m.style.left=Math.max(4,Math.min(ev.clientX,innerWidth-230))+'px';m.style.top=Math.max(4,Math.min(ev.clientY,innerHeight-340))+'px';m.classList.remove('hide')}
 function create(c,par){const i=mk(c);if(c=='TextLabel')i.Text='Label';if(c=='TextButton')i.Text='Button';if(PART.includes(c))i.Position=V(Math.round(O.t.x),Math.round(O.t.y)+5,Math.round(O.t.z));i.Parent=par;open.add(par.Id);select(i);return i}

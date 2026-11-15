@@ -1,10 +1,10 @@
 // Plaza assets: uploads (images/audio/models), toolbox, sound engine, ImageLabel ids, Create hub.
 (()=>{const C=()=>window.CLOUD,$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
-EXT={png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp',mp3:'audio/mpeg',ogg:'audio/ogg',oga:'audio/ogg',opus:'audio/ogg',wav:'audio/wav',m4a:'audio/mp4',aac:'audio/aac',flac:'audio/flac',weba:'audio/webm',webm:'audio/webm'},
+EXT={obj:'text/plain',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp',mp3:'audio/mpeg',ogg:'audio/ogg',oga:'audio/ogg',opus:'audio/ogg',wav:'audio/wav',m4a:'audio/mp4',aac:'audio/aac',flac:'audio/flac',weba:'audio/webm',webm:'audio/webm'},
 IDR=/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,ext=n=>String(n).split('.').pop().toLowerCase(),
-kindOf=f=>{const m=EXT[ext(f.name)];return m?(m.startsWith('image')?'image':'audio'):null},
+kindOf=f=>{const m=EXT[ext(f.name)];return m?(ext(f.name)=='obj'?'mesh':m.startsWith('image')?'image':'audio'):null},
 id=v=>{const m=IDR.exec(String(v||''));return m?m[1].toLowerCase():''},
-url=v=>{const i=id(v);return i&&C()&&C().on?C().U+'/storage/v1/object/public/assets/'+i:''};
+url=v=>{const i=id(v);if(i)return C()&&C().on?C().U+'/storage/v1/object/public/assets/'+i:'';v=String(v||'');return /^(https:\/\/|data:image\/)/.test(v)?v:''};
 // ---- anonymous account (so private assets are really yours) ----
 const token=()=>ACC.token();
 const hdr=async x=>({apikey:C().K,Authorization:'Bearer '+await token(),'Content-Type':'application/json',...x}),
@@ -53,7 +53,7 @@ $('#upub').classList.toggle('hide',!UP.items.some(x=>!x.id))}
 function addFiles(fs){const m=$('#ums');m.textContent='';for(const f of fs){const k=kindOf(f);if(!k){m.textContent='Skipped '+f.name+': unsupported type.';continue}if(f.size>10485760){m.textContent='Skipped '+f.name+': over 10 MB.';continue}UP.items.push({file:f,name:f.name.replace(/\.[^.]+$/,''),desc:'',pub:false,kind:k,pv:k=='image'?URL.createObjectURL(f):''})}drawRows()}
 async function publishAll(){const b=$('#upub');b.disabled=true;for(const it of UP.items){if(it.id)continue;it.st='Uploading…';drawRows();try{it.id=await PZ.upload(it)}catch(e){it.st='⚠ '+(e.message||e)}}b.disabled=false;drawRows()}
 function upUI(){const el=$('#c-up');if(!on()){el.innerHTML=noCloud;return}if(UP.done)return;UP.done=1;
-el.innerHTML=`<div class="drop" id="dz"><div style="font-size:44px">📤</div><p><b>Upload images, sounds and models</b></p><button id="uo" class="pl">📂 Open files</button><p class="hint">Images: PNG, JPG, GIF, WEBP · Audio: MP3, OGG, WAV, M4A, AAC, FLAC, OPUS, WEBM · up to 10 MB each</p><input id="uf" type="file" multiple hidden accept="image/png,image/jpeg,image/gif,image/webp,audio/*,.mp3,.ogg,.oga,.opus,.wav,.m4a,.aac,.flac,.weba,.webm"></div><div id="ul"></div><div class="row" style="margin-top:12px;flex-wrap:wrap"><button id="um">📦 Add selected object as Model</button><button id="upub" class="pl hide">🚀 Publish</button></div><p id="ums" class="hint"></p>`;
+el.innerHTML=`<div class="drop" id="dz"><div style="font-size:44px">📤</div><p><b>Upload images, sounds and models</b></p><button id="uo" class="pl">📂 Open files</button><p class="hint">Images: PNG, JPG, GIF, WEBP · Audio: MP3, OGG, WAV, M4A, AAC, FLAC, OPUS, WEBM · up to 10 MB each</p><input id="uf" type="file" multiple hidden accept="image/png,image/jpeg,image/gif,image/webp,audio/*,.mp3,.ogg,.oga,.opus,.wav,.m4a,.aac,.flac,.weba,.webm,.obj"></div><div id="ul"></div><div class="row" style="margin-top:12px;flex-wrap:wrap"><button id="um">📦 Add selected object as Model</button><button id="upub" class="pl hide">🚀 Publish</button></div><p id="ums" class="hint"></p>`;
 const f=$('#uf'),dz=$('#dz'),ul=$('#ul');$('#uo').onclick=()=>f.click();f.onchange=()=>{addFiles([...f.files]);f.value=''};
 dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')};dz.ondragleave=()=>dz.classList.remove('over');dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');addFiles([...e.dataTransfer.files])};
 $('#um').onclick=()=>{if(typeof sel=='undefined'||!sel){$('#ums').textContent='Open a template, select an object in the studio, then come back here.';return}UP.items.push({blob:new Blob([JSON.stringify({v:1,o:ser(sel)})],{type:'application/json'}),name:sel.Name,desc:'',pub:false,kind:'model'});drawRows()};
